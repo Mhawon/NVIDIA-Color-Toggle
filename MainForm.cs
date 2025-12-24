@@ -211,169 +211,354 @@ namespace NVCP_Toggle
             trackContrast2.Value = (int)(settings.Profile2.contrast * 100);
             trackGamma2.Value = (int)(settings.Profile2.gamma * 100);
 
-            // Load Hotkey
-            if (settings.Hotkey != null && settings.Hotkey.Key != Keys.None)
-            {
-                txtHotkey.Text = GetHotkeyText(settings.Hotkey.Modifiers, settings.Hotkey.Key);
-                RegisterHotKey(this.Handle, HOTKEY_ID, settings.Hotkey.Modifiers, (uint)settings.Hotkey.Key);
-            }
-            else
-            {
-                txtHotkey.Text = "Click here and press a key combination.";
-            }
+                        // Load Hotkey
 
-            // Load Selected Displays
-            if(settings.SelectedDisplays != null)
-            {
-                for (int i = 0; i < checkedListBoxDisplays.Items.Count; i++)
-                {
-                    var display = (WindowsDisplayAPI.Display)checkedListBoxDisplays.Items[i];
-                    if (settings.SelectedDisplays.Contains(display.DeviceName))
-                    {
-                        checkedListBoxDisplays.SetItemChecked(i, true);
+                        if (settings.Hotkey != null && settings.Hotkey.Key != Keys.None)
+
+                        {
+
+                            txtHotkey.Text = GetHotkeyText(settings.Hotkey.Modifiers, settings.Hotkey.Key);
+
+                            RegisterHotKey(this.Handle, HOTKEY_ID, settings.Hotkey.Modifiers, (uint)settings.Hotkey.Key);
+
+                        }
+
+                        else
+
+                        {
+
+                            txtHotkey.Text = "Click here and press a key combination.";
+
+                        }
+
+            
+
+                        // Load Selected Displays
+
+                                    if(settings.SelectedDisplays != null)
+
+                                    {
+
+                                        for (int i = 0; i < checkedListBoxDisplays.Items.Count; i++)
+
+                                        {
+
+                                            var display = (WindowsDisplayAPI.Display)checkedListBoxDisplays.Items[i];
+
+                                            if (settings.SelectedDisplays.Contains(display.DeviceName))
+
+                                            {
+
+                                                checkedListBoxDisplays.SetItemChecked(i, true);
+
+                                            }
+
+                                            else
+
+                                            {
+
+                                                checkedListBoxDisplays.SetItemChecked(i, false);
+
+                                            }
+
+                                        }
+
+                                    }
+
+                        
+
+                        UpdateAllValueLabels();
+
                     }
-                }
-            }
+
             
-            UpdateAllValueLabels();
-        }
 
-        private void SaveConfiguration()
-        {
-            string jsonString = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(configPath, jsonString);
-        }
-        
-        private void SaveProfile(int profileNumber)
-        {
-            if (profileNumber == 1)
-            {
-                settings.Profile1 = new ProfileSettings {
-                    vibrance = trackVibrance1.Value,
-                    brightness = trackBrightness1.Value / 100.0f,
-                    contrast = trackContrast1.Value / 100.0f,
-                    gamma = trackGamma1.Value / 100.0f
-                };
-            }
-            else
-            {
-                settings.Profile2 = new ProfileSettings {
-                    vibrance = trackVibrance2.Value,
-                    brightness = trackBrightness2.Value / 100.0f,
-                    contrast = trackContrast2.Value / 100.0f,
-                    gamma = trackGamma2.Value / 100.0f
-                };
-            }
-            SaveConfiguration();
-            MessageBox.Show($"Profile {profileNumber} saved.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
+                    private void SaveConfiguration()
 
-        private void PerformToggleOperation()
-        {
-            var selectedDisplays = checkedListBoxDisplays.CheckedItems.OfType<WindowsDisplayAPI.Display>().ToList();
-            if (selectedDisplays.Count == 0)
-            {
-                MessageBox.Show("Please select at least one display.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+                    {
 
-            try
-            {
-                string result = ToggleLogic.PerformToggle(selectedDisplays, settings.Profile1, settings.Profile2);
-                // Non-disruptive feedback could be a status bar message
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Toggle failed: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-        
-        private void PopulateDisplayList()
-        {
-            checkedListBoxDisplays.Items.Clear();
-            foreach (var winDisplay in WindowsDisplayAPI.Display.GetDisplays())
-            {
-                string displayName = winDisplay.ToPathDisplayTarget().FriendlyName;
-                if (string.IsNullOrEmpty(displayName)) displayName = $"Display ({winDisplay.DeviceName})";
-                checkedListBoxDisplays.Items.Add(winDisplay);
-            }
-        }
-        
-        private void UpdateAllValueLabels()
-        {
-            lblVibranceValue1.Text = trackVibrance1.Value.ToString();
-            lblBrightnessValue1.Text = (trackBrightness1.Value / 100.0f).ToString("F2");
-            lblContrastValue1.Text = (trackContrast1.Value / 100.0f).ToString("F2");
-            lblGammaValue1.Text = (trackGamma1.Value / 100.0f).ToString("F2");
+                        string jsonString = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
 
-            lblVibranceValue2.Text = trackVibrance2.Value.ToString();
-            lblBrightnessValue2.Text = (trackBrightness2.Value / 100.0f).ToString("F2");
-            lblContrastValue2.Text = (trackContrast2.Value / 100.0f).ToString("F2");
-            lblGammaValue2.Text = (trackGamma2.Value / 100.0f).ToString("F2");
-        }
+                        File.WriteAllText(configPath, jsonString);
 
-        // --- Hotkey Methods ---
-        private void txtHotkey_KeyDown(object sender, KeyEventArgs e)
-        {
-            e.SuppressKeyPress = true;
-            if (e.KeyCode == Keys.ControlKey || e.KeyCode == Keys.ShiftKey || e.KeyCode == Keys.Alt) return;
+                    }
+
+                    
+
+                    private void SaveProfile(int profileNumber)
+
+                    {
+
+                        if (profileNumber == 1)
+
+                        {
+
+                            settings.Profile1 = new ProfileSettings {
+
+                                vibrance = trackVibrance1.Value,
+
+                                brightness = trackBrightness1.Value / 100.0f,
+
+                                contrast = trackContrast1.Value / 100.0f,
+
+                                gamma = trackGamma1.Value / 100.0f
+
+                            };
+
+                        }
+
+                        else
+
+                        {
+
+                            settings.Profile2 = new ProfileSettings {
+
+                                vibrance = trackVibrance2.Value,
+
+                                brightness = trackBrightness2.Value / 100.0f,
+
+                                contrast = trackContrast2.Value / 100.0f,
+
+                                gamma = trackGamma2.Value / 100.0f
+
+                            };
+
+                        }
+
+                        SaveConfiguration();
+
+                        MessageBox.Show($"Profile {profileNumber} saved.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    }
+
             
-            uint modifiers = 0;
-            if (e.Control) { modifiers |= 2; }
-            if (e.Alt) { modifiers |= 1; }
-            if (e.Shift) { modifiers |= 4; }
 
-            settings.Hotkey = new HotkeySettings { Key = e.KeyCode, Modifiers = modifiers };
-            txtHotkey.Text = GetHotkeyText(modifiers, e.KeyCode);
-        }
+                    private void PerformToggleOperation()
 
-        private string GetHotkeyText(uint modifiers, Keys key)
-        {
-            string text = "";
-            if ((modifiers & 2) > 0) text += "Ctrl + ";
-            if ((modifiers & 1) > 0) text += "Alt + ";
-            if ((modifiers & 4) > 0) text += "Shift + ";
-            text += key.ToString();
-            return text;
-        }
+                    {
 
-        private void btnSetHotkey_Click(object sender, EventArgs e)
-        {
-            UnregisterHotKey(this.Handle, HOTKEY_ID);
-            if (settings.Hotkey.Key == Keys.None || settings.Hotkey.Modifiers == 0)
-            {
-                MessageBox.Show("Please select a valid combination with at least one modifier (Ctrl, Alt, Shift).", "Invalid Hotkey", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-            if (RegisterHotKey(this.Handle, HOTKEY_ID, settings.Hotkey.Modifiers, (uint)settings.Hotkey.Key))
-            {
-                SaveConfiguration();
-                MessageBox.Show($"Hotkey '{txtHotkey.Text}' registered successfully!", "Hotkey Set", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            else
-            {
-                MessageBox.Show("Failed to register hotkey. It might be in use by another application.", "Hotkey Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-        
-        private void checkedListBoxDisplays_ItemCheck(object sender, ItemCheckEventArgs e)
-        {
-            this.BeginInvoke(new Action(() => {
-                settings.SelectedDisplays = new List<string>();
-                foreach (var item in checkedListBoxDisplays.CheckedItems)
-                {
-                    settings.SelectedDisplays.Add(((WindowsDisplayAPI.Display)item).DeviceName);
+                        var selectedDisplays = checkedListBoxDisplays.CheckedItems.OfType<WindowsDisplayAPI.Display>().ToList();
+
+                        if (selectedDisplays.Count == 0)
+
+                        {
+
+                            MessageBox.Show("Please select at least one display.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                            return;
+
+                        }
+
+            
+
+                        try
+
+                        {
+
+                            string result = ToggleLogic.PerformToggle(selectedDisplays, settings.Profile1, settings.Profile2);
+
+                            // Non-disruptive feedback could be a status bar message
+
+                        }
+
+                        catch (Exception ex)
+
+                        {
+
+                            MessageBox.Show($"Toggle failed: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        }
+
+                    }
+
+                    
+
+                    private void PopulateDisplayList()
+
+                    {
+
+                        checkedListBoxDisplays.Items.Clear();
+
+                        foreach (var winDisplay in WindowsDisplayAPI.Display.GetDisplays())
+
+                        {
+
+                            string displayName = winDisplay.ToPathDisplayTarget().FriendlyName;
+
+                            if (string.IsNullOrEmpty(displayName)) displayName = $"Display ({winDisplay.DeviceName})";
+
+                            checkedListBoxDisplays.Items.Add(winDisplay);
+
+                        }
+
+                    }
+
+                    
+
+                    private void UpdateAllValueLabels()
+
+                    {
+
+                        lblVibranceValue1.Text = trackVibrance1.Value.ToString();
+
+                        lblBrightnessValue1.Text = (trackBrightness1.Value / 100.0f).ToString("F2");
+
+                        lblContrastValue1.Text = (trackContrast1.Value / 100.0f).ToString("F2");
+
+                        lblGammaValue1.Text = (trackGamma1.Value / 100.0f).ToString("F2");
+
+            
+
+                        lblVibranceValue2.Text = trackVibrance2.Value.ToString();
+
+                        lblBrightnessValue2.Text = (trackBrightness2.Value / 100.0f).ToString("F2");
+
+                        lblContrastValue2.Text = (trackContrast2.Value / 100.0f).ToString("F2");
+
+                        lblGammaValue2.Text = (trackGamma2.Value / 100.0f).ToString("F2");
+
+                    }
+
+            
+
+                    // --- Hotkey Methods ---
+
+                    private void txtHotkey_KeyDown(object sender, KeyEventArgs e)
+
+                    {
+
+                        e.SuppressKeyPress = true;
+
+                        if (e.KeyCode == Keys.ControlKey || e.KeyCode == Keys.ShiftKey || e.KeyCode == Keys.Alt) return;
+
+                        
+
+                        uint modifiers = 0;
+
+                        if (e.Control) { modifiers |= 2; }
+
+                        if (e.Alt) { modifiers |= 1; }
+
+                        if (e.Shift) { modifiers |= 4; }
+
+            
+
+                        settings.Hotkey = new HotkeySettings { Key = e.KeyCode, Modifiers = modifiers };
+
+                        txtHotkey.Text = GetHotkeyText(modifiers, e.KeyCode);
+
+                    }
+
+            
+
+                    private string GetHotkeyText(uint modifiers, Keys key)
+
+                    {
+
+                        string text = "";
+
+                        if ((modifiers & 2) > 0) text += "Ctrl + ";
+
+                        if ((modifiers & 1) > 0) text += "Alt + ";
+
+                        if ((modifiers & 4) > 0) text += "Shift + ";
+
+                        text += key.ToString();
+
+                        return text;
+
+                    }
+
+            
+
+                    private void btnSetHotkey_Click(object sender, EventArgs e)
+
+                    {
+
+                        UnregisterHotKey(this.Handle, HOTKEY_ID);
+
+                        if (settings.Hotkey.Key == Keys.None || settings.Hotkey.Modifiers == 0)
+
+                        {
+
+                            MessageBox.Show("Please select a valid combination with at least one modifier (Ctrl, Alt, Shift).", "Invalid Hotkey", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                            return;
+
+                        }
+
+                        if (RegisterHotKey(this.Handle, HOTKEY_ID, settings.Hotkey.Modifiers, (uint)settings.Hotkey.Key))
+
+                        {
+
+                            SaveConfiguration();
+
+                            MessageBox.Show($"Hotkey '{txtHotkey.Text}' registered successfully!", "Hotkey Set", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        }
+
+                        else
+
+                        {
+
+                            MessageBox.Show("Failed to register hotkey. It might be in use by another application.", "Hotkey Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        }
+
+                    }
+
+                    
+
+                    private void checkedListBoxDisplays_ItemCheck(object sender, ItemCheckEventArgs e)
+
+                    {
+
+                        var display = (WindowsDisplayAPI.Display)checkedListBoxDisplays.Items[e.Index];
+
+                        if (e.NewValue == CheckState.Checked)
+
+                        {
+
+                            if (!settings.SelectedDisplays.Contains(display.DeviceName))
+
+                            {
+
+                                settings.SelectedDisplays.Add(display.DeviceName);
+
+                            }
+
+                        }
+
+                        else // e.NewValue is Unchecked
+
+                        {
+
+                            settings.SelectedDisplays.Remove(display.DeviceName);
+
+                        }
+
+                        SaveConfiguration();
+
+                    }
+
+            
+
+                    private void MainForm_FormClosing(object sender, FormClosingEventArgs e) => UnregisterHotKey(this.Handle, HOTKEY_ID);
+
+                    
+
+                    protected override void WndProc(ref Message m)
+
+                    {
+
+                        if (m.Msg == WM_HOTKEY && m.WParam.ToInt32() == HOTKEY_ID) PerformToggleOperation();
+
+                        base.WndProc(ref m);
+
+                    }
+
                 }
-                SaveConfiguration();
-            }));
-        }
 
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e) => UnregisterHotKey(this.Handle, HOTKEY_ID);
+            }
 
-        protected override void WndProc(ref Message m)
-        {
-            if (m.Msg == WM_HOTKEY && m.WParam.ToInt32() == HOTKEY_ID) PerformToggleOperation();
-            base.WndProc(ref m);
-        }
-    }
-}
+            
