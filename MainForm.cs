@@ -50,7 +50,8 @@ namespace NVCP_Toggle
         public MainForm()
         {
             InitializeComponent();
-            notifyIcon.Icon = new System.Drawing.Icon(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("NVCP_Toggle.icon.ico"));
+            this.Icon = new System.Drawing.Icon(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("NVCP_Toggle.icon.ico"));
+            notifyIcon.Icon = this.Icon;
             this.Load += MainForm_Load;
             this.FormClosing += MainForm_FormClosing;
             this.Resize += MainForm_Resize;
