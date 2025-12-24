@@ -236,35 +236,65 @@ namespace NVCP_Toggle
 
             
 
-                        // Load Selected Displays
+                                    // Load Selected Displays
+
+            
 
                                     if(settings.SelectedDisplays != null)
 
+            
+
                                     {
+
+            
 
                                         for (int i = 0; i < checkedListBoxDisplays.Items.Count; i++)
 
+            
+
                                         {
+
+            
 
                                             var display = (WindowsDisplayAPI.Display)checkedListBoxDisplays.Items[i];
 
-                                            if (settings.SelectedDisplays.Contains(display.DeviceName))
+            
+
+                                            if (settings.SelectedDisplays.Any(savedName => string.Equals(savedName, display.DeviceName, StringComparison.OrdinalIgnoreCase)))
+
+            
 
                                             {
+
+            
 
                                                 checkedListBoxDisplays.SetItemChecked(i, true);
 
+            
+
                                             }
+
+            
 
                                             else
 
+            
+
                                             {
+
+            
 
                                                 checkedListBoxDisplays.SetItemChecked(i, false);
 
+            
+
                                             }
 
+            
+
                                         }
+
+            
 
                                     }
 
@@ -516,29 +546,39 @@ namespace NVCP_Toggle
 
                     {
 
-                        var display = (WindowsDisplayAPI.Display)checkedListBoxDisplays.Items[e.Index];
+                                    var display = (WindowsDisplayAPI.Display)checkedListBoxDisplays.Items[e.Index];
 
-                        if (e.NewValue == CheckState.Checked)
+                                    if (e.NewValue == CheckState.Checked)
 
-                        {
+                                    {
 
-                            if (!settings.SelectedDisplays.Contains(display.DeviceName))
+                                        if (!settings.SelectedDisplays.Any(savedName => string.Equals(savedName, display.DeviceName, StringComparison.OrdinalIgnoreCase)))
 
-                            {
+                                        {
 
-                                settings.SelectedDisplays.Add(display.DeviceName);
+                                            settings.SelectedDisplays.Add(display.DeviceName);
 
-                            }
+                                        }
 
-                        }
+                                    }
 
-                        else // e.NewValue is Unchecked
+                                    else // e.NewValue is Unchecked
 
-                        {
+                                    {
 
-                            settings.SelectedDisplays.Remove(display.DeviceName);
+                                        // Find and remove the display name using case-insensitive comparison
 
-                        }
+                                        var itemToRemove = settings.SelectedDisplays.FirstOrDefault(savedName => string.Equals(savedName, display.DeviceName, StringComparison.OrdinalIgnoreCase));
+
+                                        if (itemToRemove != null)
+
+                                        {
+
+                                            settings.SelectedDisplays.Remove(itemToRemove);
+
+                                        }
+
+                                    }
 
                         SaveConfiguration();
 
