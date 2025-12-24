@@ -212,17 +212,19 @@ namespace NVCP_Toggle
             trackContrast2.Value = (int)(settings.Profile2.contrast * 100);
             trackGamma2.Value = (int)(settings.Profile2.gamma * 100);
 
-                        // Load Hotkey
-
-                        if (settings.Hotkey != null && settings.Hotkey.Key != Keys.None)
-
-                        {
-
-                            txtHotkey.Text = GetHotkeyText(settings.Hotkey.Modifiers, settings.Hotkey.Key);
-
-                            RegisterHotKey(this.Handle, HOTKEY_ID, settings.Hotkey.Modifiers, (uint)settings.Hotkey.Key);
-
-                        }
+            // Load Hotkey
+            if (settings.Hotkey != null && settings.Hotkey.Key != Keys.None)
+            {
+                txtHotkey.Text = GetHotkeyText(settings.Hotkey.Modifiers, settings.Hotkey.Key);
+                // Delay hotkey registration to ensure form handle is fully initialized
+                this.BeginInvoke(new Action(() => {
+                    if (!RegisterHotKey(this.Handle, HOTKEY_ID, settings.Hotkey.Modifiers, (uint)settings.Hotkey.Key))
+                    {
+                        // Optionally log or display an error if registration fails on startup
+                        // MessageBox.Show("Failed to register hotkey on startup.", "Hotkey Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                }));
+            }
 
                         else
 
